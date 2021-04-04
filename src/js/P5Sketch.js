@@ -11,13 +11,39 @@ const P5Sketch = () => {
 
       p.canvasHeight = window.innerHeight;
 
+      p.spiralCoOrdinates = [];
+
+      p.spiralIndex = 0;
+
       p.setup = () => {
         p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
-        p.colorMode(p.HSB, 100, 100, 100, 1);
-        p.background(0);
         p.frameRate(30);
-        p.strokeWeight(p.height / 400);
+        p.colorMode(p.HSB, 100, 100, 100, 1);
+        p.rectMode(p.CENTER);
+        p.background(0);
+        p.stroke(100);
+
+        p.populateSpiralArray();
+        console.log(p.spiralCoOrdinates);
       };
+
+      p.populateSpiralArray = () => {
+        let x = p.width / 2;
+        let y = p.height / 2;
+        let radius = 0;
+        let theta = 0;
+        while(x < p.width){
+          p.spiralCoOrdinates.push({
+            x: x,
+            y: y,
+          });
+          theta += 0.01;
+          radius += 0.1;
+          x = x + (radius * p.cos(theta)) * 4;
+          y = y + (radius * p.sin(theta)) * 4;
+        }
+      };
+
 
       p.xPos = p.canvasWidth / 2;
 
@@ -26,24 +52,31 @@ const P5Sketch = () => {
       p.shapeOptions = ["ellipse", "rect", "equilateral", "hexagon", "octagon"];
 
       p.draw = () => {
-        p.translate(p.random(p.width), p.random(p.height));
-        for (var i = 0; i < 16; i++) {
-            let hue = p.random(100); 
-            //let hue = p.map(i, 0, 15, 0, 100);;
-            p.fill(hue, 100, 100, 0.2);
-            p.stroke(hue, 100, 100);
-            //p.rotate(p.PI / p.random([4, 8, 16, 32, 64]));
-            p.rotate(p.PI /8);
-            let shape = p.random(p.shapeOptions);
-            p[shape](
-                p.xPos - p.width / 2,
-                p.yPos - p.height / 2,
-                p.height / p.random(10, 40)
-            );
-        }
+        if (typeof p.spiralCoOrdinates[p.spiralIndex] !== 'undefined'){
+          p.translate(p.width / 2, p.height / 2);
 
-        p.xPos = p.xPos + p.height / p.random(10, 20);
-        p.yPos = p.yPos + p.height / p.random(10, 20);
+          for (var i = 1; i <= 32; i++) {
+            //let hue = p.random(100);
+            let hue = p.map(i, 1, 32, 0, 100);
+            p.fill(hue, 100, 100, 0.1);
+            //p.stroke(hue, 100, 100);
+            //p.rotate(p.PI / p.random([4, 8, 16, 32, 64]));
+            p.rotate(p.PI / 16);
+            let shape = p.random(p.shapeOptions);
+            p.rect(
+              p.xPos - p.width / 2,
+              p.yPos - p.height / 2,
+              p.height / 20 //p.random(10, 40)
+            );
+          }
+
+          // p.xPos = p.xPos + p.height / p.random(10, 20);
+          // p.yPos = p.yPos + p.height / p.random(10, 20);
+          
+          p.xPos = p.spiralCoOrdinates[p.spiralIndex].x;
+          p.yPos = p.spiralCoOrdinates[p.spiralIndex].y;
+          p.spiralIndex++;
+        }
       };
 
 
